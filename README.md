@@ -170,6 +170,9 @@ rke2_airgap_copy_additional_tarballs: []
 # Destination for airgap additional images tarballs ( see https://docs.rke2.io/install/airgap#tarball-method )
 rke2_tarball_images_path: "{{ rke2_data_path }}/agent/images"
 
+# Preload tarball images from rke2_tarball_images_path
+rke2_airgap_preload_image: false
+
 # Architecture to be downloaded, currently there are releases for amd64 and s390x
 rke2_architecture: amd64
 

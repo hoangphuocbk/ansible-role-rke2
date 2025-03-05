@@ -132,6 +132,15 @@
         mode: 0644
         force: yes
       with_items: "{{ rke2_airgap_copy_additional_tarballs }}"
+    - name: Preload tarball images
+      ansible.builtin.shell: |
+        set -o pipefail
+        {{ rke2_data_path }}/bin/ctr --address /run/k3s/containerd/containerd.sock -n k8s.io images import "{{ item }}"
+        for FILE in $(ls {{ rke2_tarball_images_path }}/*.zst 2>/dev/null); do zstdcat $FILE | {{ rke2_data_path }}/bin/ctr --address /run/k3s/containerd/containerd.sock -n k8s.io image import --all-platforms --no-unpack -; done
+        for FILE in $(ls {{ rke2_tarball_images_path }}/*.tar 2>/dev/null); do {{ rke2_data_path }}/bin/ctr --address /run/k3s/containerd/containerd.sock -n k8s.io image import --all-platforms --no-unpack; done
+      args:
+        executable: /bin/bash
+      when: rke2_airgap_preload_image
 
 - name: Airgap mode - ensure artifacts exist and have acceptable permissions # only modifies permissions if they are overprivileged
   when:
